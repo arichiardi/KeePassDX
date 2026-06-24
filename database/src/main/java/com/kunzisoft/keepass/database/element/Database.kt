@@ -647,6 +647,15 @@ open class Database {
         return mDatabaseKDBX != null
     }
 
+    /**
+     * GH#2582 — Purge stale [DeletedObject] records from the database.
+     * A record is stale if its UUID still exists in the entry or group tree.
+     * Returns the number of stale records removed, or 0 if not a KDBX database.
+     */
+    fun purgeStaleDeletedObjects(): Int {
+        return mDatabaseKDBX?.purgeStaleDeletedObjects() ?: 0
+    }
+
     @Throws(DatabaseInputException::class)
     fun mergeData(
         databaseToMergeStream: InputStream,

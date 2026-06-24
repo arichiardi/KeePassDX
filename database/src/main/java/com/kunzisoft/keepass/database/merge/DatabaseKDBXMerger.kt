@@ -304,17 +304,24 @@ class DatabaseKDBXMerger(private var database: DatabaseKDBX) {
         }
 
         // Manage deleted objects
+        // GH#2582: purge stale DeletedObject records from both databases.
+        // A record is stale if its UUID still exists in the entry/group tree.
+        val srcStale = databaseToMerge.purgeStaleDeletedObjects()
+        val tgtStale = database.purgeStaleDeletedObjects()
+        if (srcStale > 0 || tgtStale > 0) {
+            Log.w(TAG, "Purged stale DeletedObjects — source: $srcStale, target: $tgtStale")
+        }
+
         val deletedObjects = databaseToMerge.deletedObjects
         deletedObjects.forEach { deletedObject ->
             deleteEntry(deletedObject)
             deleteGroup(deletedObject, deletedObjects)
             deleteIcon(deletedObject)
-            // Attachments are removed and optimized during the database save
         }
     }
 
     /**
-     * Delete an entry from the database with the [deletedEntry] id
+     * Delete an entry from the database with the [deletedEntry] id.
      */
     private fun deleteEntry(deletedEntry: DeletedObject) {
         val databaseEntry = database.getEntryById(deletedEntry.uuid)

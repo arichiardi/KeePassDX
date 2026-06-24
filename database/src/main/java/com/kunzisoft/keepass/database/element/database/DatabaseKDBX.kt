@@ -814,6 +814,22 @@ class DatabaseKDBX : DatabaseVersioned<UUID, UUID, GroupKDBX, EntryKDBX> {
         addDeletedObject(DeletedObject(objectId))
     }
 
+    /**
+     * GH#2582 — Remove DeletedObject records whose UUID still exists in the tree.
+     * These are stale markers left behind when entries/groups were restored or recreated
+     * after a soft-delete without purging the corresponding DeletedObject.
+     * Returns the number of stale records removed.
+     */
+    fun purgeStaleDeletedObjects(): Int {
+        val stale = deletedObjects.filter { dobj ->
+            getEntryById(dobj.uuid) != null || getGroupById(dobj.uuid) != null
+        }
+        if (stale.isNotEmpty()) {
+            deletedObjects.removeAll(stale.toSet())
+        }
+        return stale.size
+    }
+
     override fun addGroupTo(newGroup: GroupKDBX, parent: GroupKDBX?) {
         super.addGroupTo(newGroup, parent)
         tagPool.put(newGroup.tags)
