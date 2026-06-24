@@ -1305,6 +1305,7 @@ class GroupActivity : DatabaseLockActivity(),
         if (mDatabaseReadOnly) {
             menu.findItem(R.id.menu_save_database)?.isVisible = false
             menu.findItem(R.id.menu_merge_database)?.isVisible = false
+            menu.findItem(R.id.menu_clean_database)?.isVisible = false
         }
         if (!mMergeDataAllowed) {
             menu.findItem(R.id.menu_merge_database)?.isVisible = false
@@ -1441,6 +1442,10 @@ class GroupActivity : DatabaseLockActivity(),
             }
             R.id.menu_merge_database -> {
                 mergeDatabase()
+                return true
+            }
+            R.id.menu_clean_database -> {
+                cleanDatabase()
                 return true
             }
             R.id.menu_reload_database -> {

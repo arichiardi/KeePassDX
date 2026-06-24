@@ -212,6 +212,22 @@ abstract class DatabaseLockActivity : DatabaseModeActivity(),
         mDatabaseViewModel.mergeDatabase(save = mAutoSaveEnable)
     }
 
+    fun cleanDatabase() {
+        mDatabase?.let { database ->
+            val count = database.purgeStaleDeletedObjects()
+            if (count > 0) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.clean_database_result, count),
+                    Toast.LENGTH_SHORT
+                ).show()
+                saveDatabase()
+            } else {
+                Toast.makeText(this, R.string.clean_database_none, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     fun mergeDatabaseFrom(uri: Uri, mainCredential: MainCredential) {
         mDatabaseViewModel.mergeDatabase(mAutoSaveEnable, uri, mainCredential)
     }

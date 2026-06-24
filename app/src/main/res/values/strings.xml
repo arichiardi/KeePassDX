@@ -283,6 +283,9 @@
     <string name="menu_lock">Lock database</string>
     <string name="menu_save_database">Save data</string>
     <string name="menu_merge_database">Merge data</string>
+    <string name="menu_clean_database">Clean up</string>
+    <string name="clean_database_result">Removed %d stale deletion marker(s)</string>
+    <string name="clean_database_none">No stale markers found</string>
     <string name="menu_reload_database">Reload data</string>
     <string name="menu_merge_from">Merge from …</string>
     <string name="menu_save_copy_to">Save a copy to …</string>

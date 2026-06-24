@@ -27,6 +27,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.graphics.toColorInt
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.DialogFragment
@@ -117,6 +118,7 @@ class NestedDatabaseSettingsFragment : NestedSettingsFragment(), DatabaseRetriev
             if (mDatabaseReadOnly) {
                 menu.findItem(R.id.menu_save_database)?.isVisible = false
                 menu.findItem(R.id.menu_merge_database)?.isVisible = false
+                menu.findItem(R.id.menu_clean_database)?.isVisible = false
             }
             if (!mMergeDataAllowed) {
                 menu.findItem(R.id.menu_merge_database)?.isVisible = false
@@ -131,6 +133,10 @@ class NestedDatabaseSettingsFragment : NestedSettingsFragment(), DatabaseRetriev
                 }
                 R.id.menu_merge_database -> {
                     mergeDatabase(!mDatabaseReadOnly)
+                    true
+                }
+                R.id.menu_clean_database -> {
+                    cleanDatabase()
                     true
                 }
                 R.id.menu_reload_database -> {
@@ -270,6 +276,22 @@ class NestedDatabaseSettingsFragment : NestedSettingsFragment(), DatabaseRetriev
 
     private fun mergeDatabase(save: Boolean) {
         mDatabaseViewModel.mergeDatabase(save)
+    }
+
+    private fun cleanDatabase() {
+        mDatabase?.let { database ->
+            val count = database.purgeStaleDeletedObjects()
+            if (count > 0) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.clean_database_result, count),
+                    Toast.LENGTH_SHORT
+                ).show()
+                saveDatabase(true)
+            } else {
+                Toast.makeText(requireContext(), R.string.clean_database_none, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun reloadDatabase() {
